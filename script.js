@@ -30,14 +30,15 @@ const yScale = d3.scaleLinear()
     .range([height, 20])
 
 // CREATE BARS
-let rects = d3.selectAll('.chart')
-    .data(stor)
+let rects = d3.selectAll('.bar')
+    .data(d, function(d) {return d.company})
     .enter()
     .append('rect')
+    .attr('x', (d => xScale(d.company)))
+    .attr('y',  height)
     .attr('width', xScale.bandwidth())
-    .attr('height', yScale(d => d.stores))
-    .attr('x', xScale(d => d.company) )
-    .attr('y', height)
+    .attr('height', height)
+    .attr('fill', 'blue')
 
 // CREATE AXES AND AXIS TITLES
 
@@ -46,6 +47,17 @@ const xAxis = d3.axisBottom()
 
 const yAxis = d3.axisLeft()
     .scale(yScale)
-    .ticks(10, "s")
+    .ticks(10)
+
+    // call x axis
+    svg.append("g")
+        .attr("class", "axis x-axis")
+        .attr("transform", `translate(0, ${height})`)
+        .call(xAxis)
+    
+    // call y axis 
+    svg.append("g")
+        .attr("class", "axis y-axis")
+        .call(yAxis);
 
 });
