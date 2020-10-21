@@ -1,11 +1,9 @@
-let coffeeData;
-
 const margin = ({top: 20, right: 10, bottom: 20, left: 10})
 const width = 960 - margin.left - margin.right;
 const height = 500 - margin.top - margin.bottom;
 
 // CHART INIT -----------------------
-let svg = d3.select('.chart').append('svg')
+const svg = d3.select('.chart').append('svg')
         .attr('width', width + margin.left + margin.right)
         .attr('height', height + margin.top + margin.bottom)
         .append("g")
@@ -52,14 +50,14 @@ const colorScale = d3.scaleOrdinal(d3.schemeTableau10)
 
 // CHART UPDATES ---------------------------**
 
-let dataKey = function(d) {
+var dataKey = function(d) {
     return d.company
 }
 
 function update(data) {
 
     console.log('in update function')
-    console.log('d = ', data)
+    console.log('data = ', data)
     console.log('dataKey(d) = ', dataKey(data))
 
 
@@ -75,8 +73,8 @@ function update(data) {
 
     yAxis.scale(yScale)
 
-    const bars = svg.selectAll('.bar')
-        .data(d);
+    const bars = svg.selectAll('rect')
+        .data(data, dataKey);
 
     // enter - update - exit sequence
 
@@ -85,7 +83,7 @@ function update(data) {
         .merge(bars)
         .transition()
         .duration(1000)
-        .attr('class', 'bars')
+        .attr('class', 'bars') 
         .attr('x', d => xScale(d.company))
         .attr('y', d => yScale(d.stores))
         .attr('height', d => height - yScale(d.stores))
@@ -162,6 +160,7 @@ function update(data) {
 d3.csv('coffee-house-chains.csv', d3.autoType).then(d => {
         //coffeeData = d;
         //console.log(coffeeData);
+        console.log(d)
         update(d) //simply call the update function with the supplied data
     });
 
