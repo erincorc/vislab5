@@ -1,176 +1,84 @@
-const margin = ({top: 20, right: 10, bottom: 20, left: 10})
+const margin = {top: 20, right: 10, bottom: 20, left: 10};
 const width = 960 - margin.left - margin.right;
 const height = 500 - margin.top - margin.bottom;
 
-// CHART INIT -----------------------
-const svg = d3.select('.chart').append('svg')
+let coffee = d3.csv('coffee-house-chains.csv', d3.autoType).then(d => {
+    console.log(d)
+
+
+// CREATE SVG WITH MARGIN CONVENTION
+
+let svg = d3.select('.chart').append('svg')
         .attr('width', width + margin.left + margin.right)
         .attr('height', height + margin.top + margin.bottom)
         .append("g")
-        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
 
-// CREATE SCALES WITHOUT DOMAINS
+
+// CREATE SCALES
 
 const xScale = d3.scaleBand()
+    .domain(d.map(d => d.company))
     .rangeRound([0, width])
     .paddingInner(0.1)
    
 const yScale = d3.scaleLinear()
-    .range([height, 0])
+    .domain([0, d3.max(d, d => d.stores)])
+    .range([height, 20])
 
-// CREATE AXES
 
-const xAxis = d3.axisBottom()
+let rectangles = svg.selectAll('.bars')
+    .data(d)
+    .enter()
+    .append('rect')
+    .attr('x', d => xScale(d.company))
+    .attr('y', d => yScale(d.stores))
+    .attr('height', d => height - yScale(d.stores))
+    .attr('width', xScale.bandwidth())
+    .attr('fill', 'pink')
+    
+
+/*
+// CREATE BARS
+let bars = svg.selectAll('rect')
+    .data(d)
+    .enter()
+    .append('rect')
+    .attr('x', d => xScale(d.company))
+    .attr('y', yScale(d.stores))
+    .attr('width', xScale.bandwidth())
+    .attr('height', d => height - yScale(d.stores))
+    .attr('fill', 'blue')
+*/
+// CREATE AXES AND AXIS TITLES
+
+let xAxis = d3.axisBottom()
     .scale(xScale)
 
-const yAxis = d3.axisLeft()
+let yAxis = d3.axisLeft()
     .scale(yScale)
-    .ticks(10)
-    
-// DISPLAY X AXIS AND ADD LABEL
+    .tickValues(yScale.ticks().concat(yScale.domain()))
+
+    // call x axis
 svg.append("g")
     .attr("class", "axis x-axis")
     .attr("transform", `translate(0, ${height})`)
-    .call(xAxis);
-
+    .call(xAxis)
+    
     // call y axis 
 svg.append("g")
     .attr("class", "axis y-axis")
-    .call(yAxis);
+    .call(yAxis)
 
-svg.append("text") // add x axis label - won't change 
+svg.append("text")
+    .attr("class", "y-axis-label")
+    .attr('x', 25)
+    .attr('y', 10)
+    .text("Number of Stores")
+
+svg.append("text")
     .attr('x', 850)
     .attr('y', 420)
     .text("Chain Names");
-
-
-//let type = d3.select('#group-by').node().value
-
-const colorScale = d3.scaleOrdinal(d3.schemeTableau10)
-
-// CHART UPDATES ---------------------------**
-
-var dataKey = function(d) {
-    return d.company
-}
-
-function update(data) {
-
-    console.log('in update function')
-    console.log('data = ', data)
-    console.log('dataKey(d) = ', dataKey(data))
-
-
-    xScale.domain(data.map(d => dataKey(d)))
-    yScale.domain([0, d3.max(data, d => d.stores)])
-
-    //console.log(d[type])
     
-    console.log(xScale)
-    console.log(xScale.bandwidth())
-
-    xAxis.scale(xScale)
-
-    yAxis.scale(yScale)
-
-    const bars = svg.selectAll('rect')
-        .data(data, dataKey);
-
-    // enter - update - exit sequence
-
-    bars.enter()
-        .append('rect')
-        .merge(bars)
-        .transition()
-        .duration(1000)
-        .attr('class', 'bars') 
-        .attr('x', d => xScale(d.company))
-        .attr('y', d => yScale(d.stores))
-        .attr('height', d => height - yScale(d.stores))
-        .attr('width', xScale.bandwidth())
-        .attr('fill', 'blue')
-
- 
-
-            // update  y axis title
-    svg.append("text")
-        .attr('class', 'y-axis-label')
-        .attr('x', 20)
-        .attr('y', 10)
-        .text("Number of Stores")
-
-
-    // now do enter, update, exit
-   /* if (type == 'stores') {
-
-        console.log('in stores')
-
-
-        bars.enter() 
-            .append('rect')
-            .merge(bars)
-            .attr('class', 'rects')
-            .attr('x', d => xScale(d.company))
-            .attr('y', d => yScale(d[type]))
-            .attr('height', d => height - yScale(d[type]))
-            .attr('width', xScale.bandwidth())
-            .attr('fill', d => colorScale(d.company))
-
-            xAxis.scale(xScale)
-
-            yAxis.scale(yScale)
-
-            // update y axis title
-            let yTitle = svg.append("text")
-                            .attr('class', 'y-axis-label')
-                            .attr('x', 20)
-                            .attr('y', 10)
-                            .text("Number of Stores")
-    }
-  
-    else { // type == 'revenue
-        console.log('in revenue')
-        bars.enter()
-            .append('rect')
-            .attr('x', d => xScale(d.company))
-            .attr('y', d => yScale(d[type]))
-            .attr('height', d => height - yScale(d[type]))
-            .attr('width', xScale.bandwidth())
-            .attr('fill', d => colorScale(d.company))
-
-            xAxis.scale(xScale)
-
-            yAxis.scale(yScale)
-
-            // update  y axis title
-            let yTitle = svg.append("text")
-                            .attr('class', 'y-axis-label')
-                            .attr('x', 20)
-                            .attr('y', 10)
-                            .text("Revenue of Stores")
-            
-    }; */
-   
-};
-
-
-
-// Loading data
-
-d3.csv('coffee-house-chains.csv', d3.autoType).then(d => {
-        //coffeeData = d;
-        //console.log(coffeeData);
-        console.log(d)
-        update(d) //simply call the update function with the supplied data
-    });
-
-// handling type change
-
-/*function typeChange(event) {
-    type = event.target.value
-    update(d, type)
-};
-
-//document.querySelector('#group-by').addEventListener('change', typeChange);
-
-// handling sorting direction change */
+});
