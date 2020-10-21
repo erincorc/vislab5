@@ -57,7 +57,7 @@ let xAxis = d3.axisBottom()
 
 let yAxis = d3.axisLeft()
     .scale(yScale)
-    .ticks(10)
+    .tickValues(yScale.ticks().concat(yScale.domain()))
 
     // call x axis
 svg.append("g")
@@ -68,6 +68,17 @@ svg.append("g")
     // call y axis 
 svg.append("g")
     .attr("class", "axis y-axis")
-    .call(yAxis);
+    .call(yAxis)
 
+svg.append("text")
+    .attr("class", "y-axis-label")
+    .attr('x', 20)
+    .attr('y', 10)
+    .text("Number of Stores")
+
+svg.append("text")
+    .attr('x', 850)
+    .attr('y', 420)
+    .text("Chain Names");
+    
 });
