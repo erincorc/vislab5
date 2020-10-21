@@ -28,23 +28,23 @@ const xAxis = d3.axisBottom()
 
 const yAxis = d3.axisLeft()
     .scale(yScale)
-    .ticks(10) 
+    .ticks(10);
     
 // DISPLAY X AXIS AND ADD LABEL
-let displayX = svg.append("g")
+svg.append("g")
                   .attr("class", "axis x-axis")
                   .attr("transform", `translate(0, ${height})`)
                   .call(xAxis);
 
-let xLabel = svg.append("text") // add x axis label - won't change 
-                .attr('x', 850)
-                .attr('y', 420)
-                .text("Chain Names")
+svg.append("text") // add x axis label - won't change 
+    .attr('x', 850)
+    .attr('y', 420)
+    .text("Chain Names");
     
     // call y axis 
-let displayY = svg.append("g")
-                  .attr("class", "axis y-axis")
-                  .call(yAxis)
+svg.append("g")
+    .attr("class", "axis y-axis")
+    .call(yAxis);
 
 
 
@@ -55,15 +55,18 @@ const colorScale = d3.scaleOrdinal(d3.schemeTableau10)
 // CHART UPDATES ---------------------------**
 
 function dataKey(d) { // will give us the company names
-    return d.company;
+    return d.map(d => d.company);
 } 
+
 
 function update(d) {
 
+    console.log('d = ', d)
     console.log('in update function')
-    
+
     xScale.domain(dataKey(d))
-    yScale.domain([0, d3.max(d => d.stores)])
+
+    yScale.domain([0, d3.max(d, d => d.stores)])
 
     //console.log(d[type])
     
@@ -71,6 +74,22 @@ function update(d) {
         .data(d)
         .enter()
         .append('rect')
+        .attr('x', d => xScale(d.company))
+        .attr('y', d => yScale(d.stores))
+        .attr('height', d => height - yScale(d.stores))
+        .attr('width', xScale.bandwidth())
+        .attr('fill', d => colorScale(d.company))
+
+        xAxis.scale(xScale)
+
+        yAxis.scale(yScale)
+
+            // update  y axis title
+        let yTitle = svg.append("text")
+                        .attr('class', 'y-axis-label')
+                        .attr('x', 20)
+                        .attr('y', 10)
+                        .text("Number of Stores")
 
 
     // now do enter, update, exit
@@ -145,4 +164,4 @@ let coffee = d3.csv('coffee-house-chains.csv', d3.autoType).then(d => {
 
 //document.querySelector('#group-by').addEventListener('change', typeChange);
 
-// handling sorting direction change
+// handling sorting direction change */
