@@ -2,8 +2,8 @@
 
 // create svg with margin convention
 const margin = ({top: 20, right: 35, bottom: 20, left: 40});
-const width = 500 - margin.left - margin.right;
-const height = 800 - margin.top - margin.bottom;
+const width = 800 - margin.left - margin.right;
+const height = 500 - margin.top - margin.bottom;
 
 
 const svg = d3.select('.chart').append('svg')
