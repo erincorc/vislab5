@@ -1,4 +1,10 @@
+
 .y-axis-label {
     writing-mode: vertical-lr;
     color: gray;
+}
+
+button.sort {
+    background-color: #696969;
+    border: #696969;
 }

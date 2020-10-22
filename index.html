@@ -1,7 +1,7 @@
 <html>
     <head>
         <script src="https://d3js.org/d3.v6.min.js" charset="utf-8"></script>
-        <script src = "script.js"></script>
+        <script defer src = "script.js"></script>
         
         <!-- Milligram CSS -->
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/milligram/1.4.1/milligram.css">
@@ -16,7 +16,29 @@
             Erin Corcoran
         </h2>
 
-            <div class="chart"> </div>
+        <h3>
+
+            Use the dropdown menu below to select what information you'd like to see about national coffee chains. <br> Press the black sort button to see the values ranked lowest to highest, and press it again to see it ranked high to low once more!
+
+        </h3>
+            <div class="row">
+
+                <div class = "column">
+                    <label for="group-by">Group By</label>
+                    <select id="group-by">
+                        <option value="stores">Stores worldwide</option>
+                        <option value="revenue">Revenue in billion U.S. dollars</option>
+                    </select>
+                </div>
+
+                <div class = "column">
+                    <label for='sort'>Sort Direction</label>
+                    <button class = "sort" id ="sortbutton"> Sort </button>
+                </div>
+
+            </div>
+            <div class = 'chart'> </div>
+
     </body>
 
     
